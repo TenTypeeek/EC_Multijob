@@ -142,12 +142,12 @@ local function buildPayload(src)
         return a.label:lower() < b.label:lower()
     end)
 
-    return { jobs = jobs, current = current, max = Config.MaxJobs, target = Config.WeeklyTarget }
+    return { jobs = jobs, current = current, max = Config.MaxJobs }
 end
 
 local function pushRefresh(src)
     local payload = buildPayload(src)
-    if payload then TriggerClientEvent('mp_multijob:refresh', src, payload) end
+    if payload then TriggerClientEvent('ec_multijob:refresh', src, payload) end
 end
 
 local function addJob(src, job, grade, silent)
@@ -260,7 +260,7 @@ local function loadPlayer(src)
     local c = { id = id, jobs = {}, internal = false }
     for _, r in ipairs(rows) do
         local row = {
-            grade = r.grade, active = r.active == 1,
+            grade = r.grade, active = (r.active == 1 or r.active == true),
             total = r.total_seconds, week = r.week_seconds, day = r.day_seconds,
             weekKey = r.week_key, dayKey = r.day_key,
             dirty = false,
@@ -371,15 +371,15 @@ local function switchToUnemployed(src, c)
 
     if not setJobInternal(src, Config.UnemployedJob, 0) then return fail(src, 'err_generic') end
 
-    notify(src, 'clocked_out', 'inform')
+    notify(src, 'now_unemployed', 'inform')
     return result(src, true)
 end
 
-lib.callback.register('mp_multijob:getData', function(src)
+lib.callback.register('ec_multijob:getData', function(src)
     return buildPayload(src)
 end)
 
-lib.callback.register('mp_multijob:clockIn', function(src, job)
+lib.callback.register('ec_multijob:switchJob', function(src, job)
     local c = Cache[src]
     if not c or type(job) ~= 'string' then return { ok = false } end
     if onCooldown(src) then return fail(src, 'err_cooldown') end
@@ -392,26 +392,15 @@ lib.callback.register('mp_multijob:clockIn', function(src, job)
     local info = Framework.GetJobInfo(job, row.grade)
     if not info then return fail(src, 'err_invalid_job') end
 
-    if Framework.GetJob(src) == job then return fail(src, 'err_already_clocked_in') end
+    if Framework.GetJob(src) == job then return fail(src, 'err_already_on_job') end
 
     if not setJobInternal(src, job, row.grade) then return fail(src, 'err_generic') end
 
-    notify(src, 'clocked_in', 'success', info.label)
+    notify(src, 'switched_job', 'success', info.label)
     return result(src, true)
 end)
 
-lib.callback.register('mp_multijob:clockOut', function(src, job)
-    local c = Cache[src]
-    if not c or type(job) ~= 'string' then return { ok = false } end
-    if onCooldown(src) then return fail(src, 'err_cooldown') end
-
-    if Framework.GetJob(src) ~= job then return fail(src, 'err_not_clocked_in') end
-    if job == Config.UnemployedJob then return fail(src, 'err_already_unemployed') end
-
-    return switchToUnemployed(src, c)
-end)
-
-lib.callback.register('mp_multijob:removeJob', function(src, job)
+lib.callback.register('ec_multijob:removeJob', function(src, job)
     local c = Cache[src]
     if not c or type(job) ~= 'string' then return { ok = false } end
     if onCooldown(src) then return fail(src, 'err_cooldown') end

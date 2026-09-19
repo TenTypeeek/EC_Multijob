@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EC_MULTIJOB</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: transparent;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #ui-container {
+            opacity: 0;
+            visibility: hidden;
+            transform: translate(40px, -50%);
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                        visibility 0.4s;
+        }
+
+        #ui-container.ui-open {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(0, -50%);
+        }
+
+        .view-container {
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .view-hidden { display: none !important; }
+        .view-exit-left { opacity: 0; transform: translateX(-20px); }
+        .view-exit-right { opacity: 0; transform: translateX(20px); }
+        .view-enter-from-right { opacity: 0; transform: translateX(20px); }
+        .view-enter-from-left { opacity: 0; transform: translateX(-20px); }
+
+        #modal {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        #modal .modal-box {
+            transform: scale(0.95) translateY(6px);
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #modal.modal-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #modal.modal-open .modal-box {
+            transform: scale(1) translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition-duration: 0.01ms !important; }
+        }
+
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-wrapper" class="fixed inset-0 pointer-events-none select-none">
+
+        <div id="ui-container" class="absolute top-1/2 right-[2vw] -translate-y-1/2 w-[340px] bg-[#131313] rounded-[20px] shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex flex-col text-white pointer-events-auto border border-white/[0.06] overflow-hidden">
+
+            <div id="view-list" class="view-container flex flex-col w-full">
+                <div class="flex justify-between items-center px-4 py-3.5 border-b border-white/[0.06]">
+                    <div class="text-lg font-extrabold uppercase tracking-tight" data-i18n="ui_my_jobs"></div>
+                    <button class="btn-close bg-white/5 p-1.5 rounded-lg hover:bg-white/10 active:scale-95 transition-all duration-200 text-white/60 hover:text-white">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <div id="job-list" class="p-4 flex flex-col gap-2"></div>
+            </div>
+
+            <div id="view-details" class="view-container view-hidden flex flex-col w-full">
+                <div class="flex items-center px-4 py-3.5 border-b border-white/[0.06] gap-3">
+                    <button id="btn-back" class="bg-white/5 p-1.5 rounded-lg hover:bg-white/10 active:scale-95 transition-all duration-200 text-white/60 hover:text-white">
+                        <i data-lucide="chevron-left" class="w-4 h-4" style="stroke-width: 2.5px;"></i>
+                    </button>
+                    <div id="d-title" class="flex-1 min-w-0 text-lg font-extrabold uppercase tracking-tight truncate"></div>
+                    <button class="btn-close bg-white/5 p-1.5 rounded-lg hover:bg-white/10 active:scale-95 transition-all duration-200 text-white/60 hover:text-white">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <div class="p-4 flex flex-col gap-2">
+                    <div class="bg-[#1c1c1c] px-4 py-3.5 rounded-xl">
+                        <div class="flex items-center gap-2">
+                            <div id="d-label" class="text-base font-bold leading-tight truncate"></div>
+                            <span id="d-current-wrap" class="hidden shrink-0 whitespace-nowrap bg-white/10 text-white/80 text-[10px] px-2 py-0.5 rounded-md uppercase font-bold tracking-wider" data-i18n="ui_current_job"></span>
+                        </div>
+                        <div id="d-sub" class="hidden text-[13px] text-[#8a8a8a] font-medium mt-0.5"></div>
+                    </div>
+
+                    <div id="d-stats" class="grid grid-cols-2 gap-2">
+                        <div class="bg-[#1c1c1c] p-3.5 rounded-xl min-w-0">
+                            <div class="flex items-center gap-1.5 text-[#8a8a8a] mb-2">
+                                <i data-lucide="award" class="w-3.5 h-3.5"></i>
+                                <span class="text-xs font-medium" data-i18n="ui_grade"></span>
+                            </div>
+                            <div id="d-grade" class="text-lg font-bold leading-tight truncate"></div>
+                        </div>
+                        <div class="bg-[#1c1c1c] p-3.5 rounded-xl min-w-0">
+                            <div class="flex items-center gap-1.5 text-[#8a8a8a] mb-2">
+                                <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+                                <span class="text-xs font-medium" data-i18n="ui_paycheck"></span>
+                            </div>
+                            <div id="d-pay" class="text-lg font-bold leading-tight truncate"></div>
+                        </div>
+                        <div class="bg-[#1c1c1c] p-3.5 rounded-xl min-w-0">
+                            <div class="flex items-center gap-1.5 text-[#8a8a8a] mb-2">
+                                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                <span class="text-xs font-medium" data-i18n="ui_total_hours"></span>
+                            </div>
+                            <div id="d-total" class="text-lg font-bold leading-tight"></div>
+                        </div>
+                        <div class="bg-[#1c1c1c] p-3.5 rounded-xl min-w-0">
+                            <div class="flex items-center gap-1.5 text-[#8a8a8a] mb-2">
+                                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                                <span class="text-xs font-medium" data-i18n="ui_this_week"></span>
+                            </div>
+                            <div id="d-week" class="text-lg font-bold leading-tight"></div>
+                        </div>
+                        <div class="bg-[#1c1c1c] p-3.5 rounded-xl min-w-0 col-span-2">
+                            <div class="flex items-center gap-1.5 text-[#8a8a8a] mb-2">
+                                <i data-lucide="sun" class="w-3.5 h-3.5"></i>
+                                <span class="text-xs font-medium" data-i18n="ui_today"></span>
+                            </div>
+                            <div id="d-day" class="text-lg font-bold leading-tight"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-2 mt-2">
+                        <button id="btn-switch" class="w-full bg-[#1b2724] border border-[#234233] text-[#34d399] rounded-xl py-3 flex items-center justify-center gap-2 text-sm hover:bg-[#1f312c] hover:border-[#2d5542] active:scale-[0.98] transition-all duration-200 font-semibold disabled:opacity-60">
+                            <i data-lucide="arrow-left-right" class="w-4 h-4"></i> <span id="btn-switch-text"></span>
+                        </button>
+
+                        <button id="btn-remove" class="w-full bg-[#2a1d22] border border-[#4a2428] text-[#f87171] rounded-xl py-3 flex items-center justify-center gap-2 text-sm hover:bg-[#382227] hover:border-[#632f35] active:scale-[0.98] transition-all duration-200 font-semibold disabled:opacity-60">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i> <span data-i18n="ui_remove_job"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center pb-3.5 pt-0.5 text-[#5c5c5c] text-xs font-medium" data-i18n="ui_press_esc"></div>
+
+            <div id="modal" class="absolute inset-0 z-20 flex items-center justify-center p-5 bg-black/75 backdrop-blur-[2px]">
+                <div class="modal-box w-full bg-[#1c1c1c] border border-white/10 rounded-2xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+                    <div class="bg-white/5 w-10 h-10 rounded-xl flex items-center justify-center mb-3.5">
+                        <i data-lucide="trash-2" class="w-5 h-5 text-white/70"></i>
+                    </div>
+                    <div class="text-base font-bold mb-1" data-i18n="ui_remove_title"></div>
+                    <div id="modal-text" class="text-[13px] text-[#8a8a8a] leading-relaxed mb-5"></div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="modal-cancel" class="bg-white/5 border border-white/10 text-white/80 rounded-xl py-2.5 text-sm font-semibold hover:bg-white/10 active:scale-[0.98] transition-all duration-200" data-i18n="ui_cancel"></button>
+                        <button id="modal-confirm" class="bg-[#2a1d22] border border-[#4a2428] text-[#f87171] rounded-xl py-2.5 text-sm font-semibold hover:bg-[#382227] hover:border-[#632f35] active:scale-[0.98] transition-all duration-200 disabled:opacity-60" data-i18n="ui_remove_job"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let locale = {};
+        let state = { jobs: [], current: null, max: 0 };
+        let selectedJob = null;
+        let isUIOpen = false;
+        let isAnimating = false;
+        let busy = false;
+        const ANIMATION_DURATION = 250;
+
+        const IN_GAME = !!window.GetParentResourceName;
+        const resourceName = () => (IN_GAME ? window.GetParentResourceName() : 'ec_multijob');
+
+        const $ = (id) => document.getElementById(id);
+        const uiContainer = $('ui-container');
+        const viewList = $('view-list');
+        const viewDetails = $('view-details');
+        const jobList = $('job-list');
+        const btnSwitch = $('btn-switch');
+        const btnRemove = $('btn-remove');
+        const modal = $('modal');
+        const modalConfirm = $('modal-confirm');
+
+        function t(key, ...args) {
+            let str = Object.prototype.hasOwnProperty.call(locale, key) ? locale[key] : key;
+            args.forEach((a) => { str = str.replace('%s', () => a); });
+            return str;
+        }
+
+        function esc(value) {
+            return String(value ?? '').replace(/[&<>"']/g, (c) => (
+                { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+            ));
+        }
+
+        const money = (n) => t('ui_currency', Number(n || 0).toLocaleString('en-US'));
+        const hours = (sec) => t('ui_hours_short', ((sec || 0) / 3600).toFixed(1));
+        const jobName = (j) => (j.unemployed ? t('ui_unemployed') : j.label);
+        const gradeName = (j) => (j.unemployed ? t('ui_civilian') : j.gradeLabel);
+
+        function applyStaticText() {
+            document.querySelectorAll('[data-i18n]').forEach((el) => {
+                el.textContent = t(el.dataset.i18n);
+            });
+        }
+
+        async function post(name, body) {
+            if (!IN_GAME) return mockPost(name, body);
+            try {
+                const res = await fetch(`https://${resourceName()}/${name}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+                    body: JSON.stringify(body || {}),
+                });
+                return await res.json();
+            } catch (e) {
+                return null;
+            }
+        }
+
+        const CARD_CLASS = 'job-card flex items-center bg-[#1c1c1c] p-3 rounded-xl relative overflow-hidden group border border-transparent transition-all duration-200 cursor-pointer hover:bg-[#232323] hover:border-white/[0.06] active:scale-[0.98]';
+        const ACCENT = '<div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-[55%] bg-white rounded-r-full"></div>';
+        const BADGE = (text) => `<span class="shrink-0 whitespace-nowrap bg-white/10 text-white/80 text-[9px] px-1.5 py-0.5 rounded-md uppercase font-bold tracking-wider">${esc(text)}</span>`;
+
+        function jobCard(j) {
+            const pay = j.unemployed ? '' : `
+                        <span class="mx-1.5 opacity-40">•</span>
+                        <span class="text-white/70">${esc(money(j.salary))}</span>`;
+
+            return `
+            <div class="${CARD_CLASS}" data-job="${esc(j.job)}">
+                ${j.current ? ACCENT : ''}
+                <div class="bg-white/5 p-2.5 rounded-lg mr-3 group-hover:bg-white/10 transition-colors duration-200">
+                    <i data-lucide="briefcase" class="w-[18px] h-[18px] text-[#8a8a8a]"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <span class="font-bold text-[15px] leading-tight truncate ${j.current ? '' : 'text-white/90'}">${esc(jobName(j))}</span>
+                        ${j.current ? BADGE(t('ui_current_job')) : ''}
+                    </div>
+                    <div class="text-xs text-[#8a8a8a] font-medium flex items-center">
+                        <span class="truncate">${esc(gradeName(j))}</span>${pay}
+                    </div>
+                </div>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-[#5c5c5c] group-hover:text-white transition-colors duration-200"></i>
+            </div>`;
+        }
+
+        function renderList() {
+            jobList.innerHTML = state.jobs.map(jobCard).join('');
+            lucide.createIcons();
+        }
+
+        function renderDetails() {
+            const j = state.jobs.find((x) => x.job === selectedJob);
+            if (!j) return false;
+
+            $('d-title').textContent = jobName(j);
+            $('d-label').textContent = jobName(j);
+            $('d-current-wrap').classList.toggle('hidden', !j.current);
+
+            $('d-sub').textContent = gradeName(j);
+            $('d-sub').classList.toggle('hidden', !j.unemployed);
+            $('d-stats').classList.toggle('hidden', !!j.unemployed);
+
+            $('d-grade').textContent = gradeName(j);
+            $('d-pay').textContent = money(j.salary);
+            $('d-total').textContent = hours(j.total);
+            $('d-week').textContent = hours(j.week);
+            $('d-day').textContent = hours(j.day);
+
+            $('btn-switch-text').textContent = t(j.unemployed ? 'ui_become_unemployed' : 'ui_switch_job');
+            btnSwitch.classList.toggle('hidden', !!j.current);
+            btnRemove.classList.toggle('hidden', !!j.unemployed || !!j.locked);
+
+            lucide.createIcons();
+            return true;
+        }
+
+        function applyData(data) {
+            if (!data) return;
+            state = data;
+            renderList();
+
+            const inDetails = !viewDetails.classList.contains('view-hidden');
+            if (inDetails && !renderDetails()) {
+                hideModal();
+                showListView();
+            }
+        }
+
+        function showModal() {
+            const j = state.jobs.find((x) => x.job === selectedJob);
+            if (!j) return;
+            $('modal-text').textContent = t('ui_remove_confirm', jobName(j));
+            modal.classList.add('modal-open');
+        }
+
+        function hideModal() {
+            modal.classList.remove('modal-open');
+        }
+
+        function showDetailsView(name) {
+            if (isAnimating) return;
+            selectedJob = name;
+            if (!renderDetails()) return;
+            isAnimating = true;
+
+            viewList.classList.add('view-exit-left');
+            setTimeout(() => {
+                viewList.classList.add('view-hidden');
+                viewList.classList.remove('view-exit-left');
+
+                viewDetails.classList.remove('view-hidden');
+                viewDetails.classList.add('view-enter-from-right');
+                void viewDetails.offsetWidth;
+                viewDetails.classList.remove('view-enter-from-right');
+
+                setTimeout(() => { isAnimating = false; }, ANIMATION_DURATION);
+            }, ANIMATION_DURATION);
+        }
+
+        function showListView() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            viewDetails.classList.add('view-exit-right');
+            setTimeout(() => {
+                viewDetails.classList.add('view-hidden');
+                viewDetails.classList.remove('view-exit-right');
+
+                viewList.classList.remove('view-hidden');
+                viewList.classList.add('view-enter-from-left');
+                void viewList.offsetWidth;
+                viewList.classList.remove('view-enter-from-left');
+
+                setTimeout(() => { isAnimating = false; }, ANIMATION_DURATION);
+            }, ANIMATION_DURATION);
+        }
+
+        function openUI() {
+            if (isUIOpen) return;
+            isUIOpen = true;
+
+            hideModal();
+            viewDetails.classList.add('view-hidden');
+            viewDetails.classList.remove('view-exit-right', 'view-enter-from-right');
+            viewList.classList.remove('view-hidden', 'view-exit-left', 'view-enter-from-left');
+            selectedJob = null;
+
+            uiContainer.classList.add('ui-open');
+        }
+
+        function closeUI() {
+            if (!isUIOpen) return;
+            isUIOpen = false;
+            hideModal();
+            uiContainer.classList.remove('ui-open');
+
+            setTimeout(() => { post('closeUI'); }, 400);
+        }
+
+        jobList.addEventListener('click', (event) => {
+            const card = event.target.closest('.job-card');
+            if (card) showDetailsView(card.dataset.job);
+        });
+
+        $('btn-back').addEventListener('click', showListView);
+        document.querySelectorAll('.btn-close').forEach((btn) => btn.addEventListener('click', closeUI));
+
+        btnSwitch.addEventListener('click', async () => {
+            if (busy || !selectedJob) return;
+
+            busy = true; btnSwitch.disabled = true;
+            const res = await post('switchJob', { job: selectedJob });
+            busy = false; btnSwitch.disabled = false;
+            if (res && res.data) applyData(res.data);
+        });
+
+        btnRemove.addEventListener('click', () => {
+            if (busy || !selectedJob) return;
+            showModal();
+        });
+
+        $('modal-cancel').addEventListener('click', hideModal);
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) hideModal();
+        });
+
+        modalConfirm.addEventListener('click', async () => {
+            if (busy || !selectedJob) return;
+
+            busy = true; modalConfirm.disabled = true;
+            const res = await post('removeJob', { job: selectedJob });
+            busy = false; modalConfirm.disabled = false;
+
+            hideModal();
+            if (res && res.data) applyData(res.data);
+        });
+
+        window.addEventListener('message', (event) => {
+            const msg = event.data;
+            if (msg.type === 'OPEN_MULTIJOB') {
+                if (msg.locale) locale = msg.locale;
+                applyStaticText();
+                applyData(msg.data);
+                openUI();
+            } else if (msg.type === 'UPDATE_JOBS') {
+                applyData(msg.data);
+            } else if (msg.type === 'CLOSE_UI') {
+                closeUI();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key !== 'Escape' || !isUIOpen) return;
+            if (modal.classList.contains('modal-open')) hideModal();
+            else closeUI();
+        });
+
+        let mockState = null;
+
+        function mockPost(name, body) {
+            if (!mockState) return null;
+            const j = mockState.jobs.find((x) => x.job === (body && body.job));
+            if (name === 'switchJob' && j) mockState.jobs.forEach((x) => { x.current = x === j; });
+            if (name === 'removeJob' && j && !j.unemployed) mockState.jobs = mockState.jobs.filter((x) => x !== j);
+            mockState.jobs.sort((a, b) => (Number(b.current) - Number(a.current)) || (Number(!!a.unemployed) - Number(!!b.unemployed)));
+            return { ok: true, data: JSON.parse(JSON.stringify(mockState)) };
+        }
+
+        if (!IN_GAME) {
+            document.body.style.backgroundImage = 'radial-gradient(circle at center, #2a2a35 0%, #0d0d12 100%)';
+            setTimeout(async () => {
+                try { locale = await (await fetch('../locales/en.json')).json(); } catch (e) {}
+                mockState = {
+                    max: 3, current: 'police',
+                    jobs: [
+                        { job: 'police', label: 'Los Santos Police Dept.', grade: 4, gradeLabel: 'Chief of Police', salary: 1200, total: 190800, week: 54000, day: 3600, current: true },
+                        { job: 'mechanic', label: "Benny's Motorworks", grade: 1, gradeLabel: 'Mechanic', salary: 450, total: 7200, week: 0, day: 0, current: false },
+                        { job: 'unemployed', unemployed: true, locked: true, label: '', gradeLabel: '', salary: 0, total: 0, week: 0, day: 0, current: false },
+                    ],
+                };
+                applyStaticText();
+                applyData(mockState);
+                openUI();
+            }, 300);
+        }
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>

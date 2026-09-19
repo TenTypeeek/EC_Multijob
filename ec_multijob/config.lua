@@ -16,7 +16,6 @@ Config.RemoveFiredJobs = true
 
 Config.TrackHours = true
 Config.KeepHours = true
-Config.WeeklyTarget = 40
 
 Config.Cooldown = 2
 

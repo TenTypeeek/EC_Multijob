@@ -24,7 +24,7 @@ local function openUI()
         return notify('err_unavailable')
     end
 
-    local data = lib.callback.await('mp_multijob:getData', false)
+    local data = lib.callback.await('ec_multijob:getData', false)
     if not data then return end
 
     isOpen = true
@@ -47,19 +47,15 @@ RegisterNUICallback('closeUI', function(_, cb)
     cb('ok')
 end)
 
-RegisterNUICallback('clockIn', function(body, cb)
-    cb(lib.callback.await('mp_multijob:clockIn', false, body and body.job) or { ok = false })
-end)
-
-RegisterNUICallback('clockOut', function(body, cb)
-    cb(lib.callback.await('mp_multijob:clockOut', false, body and body.job) or { ok = false })
+RegisterNUICallback('switchJob', function(body, cb)
+    cb(lib.callback.await('ec_multijob:switchJob', false, body and body.job) or { ok = false })
 end)
 
 RegisterNUICallback('removeJob', function(body, cb)
-    cb(lib.callback.await('mp_multijob:removeJob', false, body and body.job) or { ok = false })
+    cb(lib.callback.await('ec_multijob:removeJob', false, body and body.job) or { ok = false })
 end)
 
-RegisterNetEvent('mp_multijob:refresh', function(data)
+RegisterNetEvent('ec_multijob:refresh', function(data)
     if isOpen then
         SendNUIMessage({ type = 'UPDATE_JOBS', data = data })
     end

@@ -16,11 +16,11 @@ end
 Framework.name = detect()
 
 if not Framework.name then
-    print('^1[mp_multijob] No framework found. Make sure es_extended or qb-core starts BEFORE mp_multijob.^7')
+    print('^1[ec_multijob] No framework found. Make sure es_extended or qb-core starts BEFORE ec_multijob.^7')
     return
 end
 
-print(('^2[mp_multijob] Framework: %s^7'):format(Framework.name))
+print(('^2[ec_multijob] Framework: %s^7'):format(Framework.name))
 
 if Framework.name == 'esx' then
     local ESX = exports['es_extended']:getSharedObject()
