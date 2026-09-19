@@ -11,7 +11,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         body {
@@ -85,7 +85,7 @@
                 <div class="flex justify-between items-center px-4 py-3.5 border-b border-white/[0.06]">
                     <div class="text-lg font-extrabold uppercase tracking-tight" data-i18n="ui_my_jobs"></div>
                     <button class="btn-close bg-white/5 p-1.5 rounded-lg hover:bg-white/10 active:scale-95 transition-all duration-200 text-white/60 hover:text-white">
-                        <i data-lucide="x" class="w-4 h-4"></i>
+                        <i class="fa-solid fa-xmark leading-none text-sm"></i>
                     </button>
                 </div>
 
@@ -95,11 +95,11 @@
             <div id="view-details" class="view-container view-hidden flex flex-col w-full">
                 <div class="flex items-center px-4 py-3.5 border-b border-white/[0.06] gap-3">
                     <button id="btn-back" class="bg-white/5 p-1.5 rounded-lg hover:bg-white/10 active:scale-95 transition-all duration-200 text-white/60 hover:text-white">
-                        <i data-lucide="chevron-left" class="w-4 h-4" style="stroke-width: 2.5px;"></i>
+                        <i class="fa-solid fa-chevron-left leading-none text-sm"></i>
                     </button>
                     <div id="d-title" class="flex-1 min-w-0 text-lg font-extrabold uppercase tracking-tight truncate"></div>
                     <button class="btn-close bg-white/5 p-1.5 rounded-lg hover:bg-white/10 active:scale-95 transition-all duration-200 text-white/60 hover:text-white">
-                        <i data-lucide="x" class="w-4 h-4"></i>
+                        <i class="fa-solid fa-xmark leading-none text-sm"></i>
                     </button>
                 </div>
 
@@ -115,35 +115,35 @@
                     <div id="d-stats" class="grid grid-cols-2 gap-2">
                         <div class="bg-[#1c1c1c] p-3.5 rounded-xl min-w-0">
                             <div class="flex items-center gap-1.5 text-[#8a8a8a] mb-2">
-                                <i data-lucide="award" class="w-3.5 h-3.5"></i>
+                                <i class="fa-solid fa-award leading-none text-[12px]"></i>
                                 <span class="text-xs font-medium" data-i18n="ui_grade"></span>
                             </div>
                             <div id="d-grade" class="text-lg font-bold leading-tight truncate"></div>
                         </div>
                         <div class="bg-[#1c1c1c] p-3.5 rounded-xl min-w-0">
                             <div class="flex items-center gap-1.5 text-[#8a8a8a] mb-2">
-                                <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+                                <i class="fa-solid fa-wallet leading-none text-[12px]"></i>
                                 <span class="text-xs font-medium" data-i18n="ui_paycheck"></span>
                             </div>
                             <div id="d-pay" class="text-lg font-bold leading-tight truncate"></div>
                         </div>
                         <div class="bg-[#1c1c1c] p-3.5 rounded-xl min-w-0">
                             <div class="flex items-center gap-1.5 text-[#8a8a8a] mb-2">
-                                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                <i class="fa-solid fa-clock leading-none text-[12px]"></i>
                                 <span class="text-xs font-medium" data-i18n="ui_total_hours"></span>
                             </div>
                             <div id="d-total" class="text-lg font-bold leading-tight"></div>
                         </div>
                         <div class="bg-[#1c1c1c] p-3.5 rounded-xl min-w-0">
                             <div class="flex items-center gap-1.5 text-[#8a8a8a] mb-2">
-                                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                                <i class="fa-solid fa-calendar leading-none text-[12px]"></i>
                                 <span class="text-xs font-medium" data-i18n="ui_this_week"></span>
                             </div>
                             <div id="d-week" class="text-lg font-bold leading-tight"></div>
                         </div>
                         <div class="bg-[#1c1c1c] p-3.5 rounded-xl min-w-0 col-span-2">
                             <div class="flex items-center gap-1.5 text-[#8a8a8a] mb-2">
-                                <i data-lucide="sun" class="w-3.5 h-3.5"></i>
+                                <i class="fa-solid fa-sun leading-none text-[12px]"></i>
                                 <span class="text-xs font-medium" data-i18n="ui_today"></span>
                             </div>
                             <div id="d-day" class="text-lg font-bold leading-tight"></div>
@@ -152,11 +152,11 @@
 
                     <div class="flex flex-col gap-2 mt-2">
                         <button id="btn-switch" class="w-full bg-[#1b2724] border border-[#234233] text-[#34d399] rounded-xl py-3 flex items-center justify-center gap-2 text-sm hover:bg-[#1f312c] hover:border-[#2d5542] active:scale-[0.98] transition-all duration-200 font-semibold disabled:opacity-60">
-                            <i data-lucide="arrow-left-right" class="w-4 h-4"></i> <span id="btn-switch-text"></span>
+                            <i class="fa-solid fa-right-left leading-none text-sm"></i> <span id="btn-switch-text"></span>
                         </button>
 
                         <button id="btn-remove" class="w-full bg-[#2a1d22] border border-[#4a2428] text-[#f87171] rounded-xl py-3 flex items-center justify-center gap-2 text-sm hover:bg-[#382227] hover:border-[#632f35] active:scale-[0.98] transition-all duration-200 font-semibold disabled:opacity-60">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i> <span data-i18n="ui_remove_job"></span>
+                            <i class="fa-solid fa-trash-can leading-none text-sm"></i> <span data-i18n="ui_remove_job"></span>
                         </button>
                     </div>
                 </div>
@@ -167,7 +167,7 @@
             <div id="modal" class="absolute inset-0 z-20 flex items-center justify-center p-5 bg-black/75 backdrop-blur-[2px]">
                 <div class="modal-box w-full bg-[#1c1c1c] border border-white/10 rounded-2xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
                     <div class="bg-white/5 w-10 h-10 rounded-xl flex items-center justify-center mb-3.5">
-                        <i data-lucide="trash-2" class="w-5 h-5 text-white/70"></i>
+                        <i class="fa-solid fa-trash-can leading-none text-base text-white/70"></i>
                     </div>
                     <div class="text-base font-bold mb-1" data-i18n="ui_remove_title"></div>
                     <div id="modal-text" class="text-[13px] text-[#8a8a8a] leading-relaxed mb-5"></div>
@@ -252,7 +252,7 @@
             <div class="${CARD_CLASS}" data-job="${esc(j.job)}">
                 ${j.current ? ACCENT : ''}
                 <div class="bg-white/5 p-2.5 rounded-lg mr-3 group-hover:bg-white/10 transition-colors duration-200">
-                    <i data-lucide="briefcase" class="w-[18px] h-[18px] text-[#8a8a8a]"></i>
+                    <i class="fa-solid fa-briefcase leading-none text-[16px] text-[#8a8a8a]"></i>
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-0.5">
@@ -263,13 +263,12 @@
                         <span class="truncate">${esc(gradeName(j))}</span>${pay}
                     </div>
                 </div>
-                <i data-lucide="chevron-right" class="w-4 h-4 text-[#5c5c5c] group-hover:text-white transition-colors duration-200"></i>
+                <i class="fa-solid fa-chevron-right leading-none text-sm text-[#5c5c5c] group-hover:text-white transition-colors duration-200"></i>
             </div>`;
         }
 
         function renderList() {
             jobList.innerHTML = state.jobs.map(jobCard).join('');
-            lucide.createIcons();
         }
 
         function renderDetails() {
@@ -294,7 +293,6 @@
             btnSwitch.classList.toggle('hidden', !!j.current);
             btnRemove.classList.toggle('hidden', !!j.unemployed || !!j.locked);
 
-            lucide.createIcons();
             return true;
         }
 
@@ -468,7 +466,6 @@
             }, 300);
         }
 
-        lucide.createIcons();
     </script>
 </body>
 </html>
