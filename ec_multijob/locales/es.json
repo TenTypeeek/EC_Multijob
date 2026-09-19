@@ -2,7 +2,6 @@
     "notify_title": "Multitrabajo",
     "keybind_description": "Abrir el menú de multitrabajo",
     "ui_my_jobs": "Mis trabajos",
-    "ui_press_esc": "Pulsa ESC para cerrar",
     "ui_current_job": "Trabajo actual",
     "ui_total_hours": "Horas totales",
     "ui_this_week": "Esta semana",

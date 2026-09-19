@@ -2,7 +2,6 @@
     "notify_title": "Multijob",
     "keybind_description": "Multijob-Menü öffnen",
     "ui_my_jobs": "Meine Jobs",
-    "ui_press_esc": "ESC zum Schließen",
     "ui_current_job": "Aktueller Job",
     "ui_current_job_short": "Aktueller Job",
     "ui_per_pay": "%s/Zahlung",

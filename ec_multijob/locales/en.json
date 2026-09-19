@@ -2,7 +2,6 @@
     "notify_title": "Multijob",
     "keybind_description": "Open multijob menu",
     "ui_my_jobs": "My Jobs",
-    "ui_press_esc": "Press ESC to close",
     "ui_current_job": "Current Job",
     "ui_total_hours": "Total hours",
     "ui_this_week": "This week",
