@@ -60,64 +60,10 @@ Your players can now press **F5** or type **/multijob** to manage their jobs!
 
 ---
 
-## ⚙️ Configuration
-
-Everything is configured in `config.lua`:
-
-| Option | Default | Description |
-| --- | --- | --- |
-| `Config.Framework` | `'auto'` | `'auto'`, `'esx'`, or `'qb'`. Auto detects the running framework. |
-| `Config.Locale` | `'en'` | Language file to use (`en`, `cs`, `de`, `es`). |
-| `Config.Command` | `'multijob'` | Chat command that opens the menu. |
-| `Config.Keybind` | `'F5'` | Default keybind (players can rebind it in their settings). Set to `''` to disable. |
-| `Config.MaxJobs` | `3` | Maximum number of jobs a player can hold at once. |
-| `Config.UnemployedJob` | `'unemployed'` | Name of your framework's unemployed job. |
-| `Config.BlockedJobs` | `{}` | Jobs that can never be added to a player's list. |
-| `Config.LockedJobs` | `{}` | Jobs that players cannot remove from their list. |
-| `Config.AutoAddJobs` | `true` | Automatically add jobs the player receives to their list. |
-| `Config.RemoveFiredJobs` | `true` | Automatically remove a job when the player is set to unemployed. |
-| `Config.TrackHours` | `true` | Track total, weekly, and daily hours per job. |
-| `Config.KeepHours` | `true` | Keep hours saved when a job is removed. |
-| `Config.Cooldown` | `2` | Seconds between menu actions (anti-spam). |
-| `Config.NotifyPosition` | `'top'` | Position of `ox_lib` notifications. |
-| `Config.NotifyDuration` | `5000` | Notification duration in milliseconds. |
-
----
-
-## 🔌 Exports (Server)
-
-Integrate Eclipse Multijob into your own scripts:
-
-```lua
--- Add a job to a player's list. Returns true, or false + error key.
-exports['ec_multijob']:AddJob(source, 'police', 2)
-
--- Remove a job from a player's list.
-exports['ec_multijob']:RemoveJob(source, 'police')
-
--- Check whether a player has a job in their list.
-local hasJob = exports['ec_multijob']:HasJob(source, 'police')
-
--- Get all of a player's jobs (job, grade, total, week, day).
-local jobs = exports['ec_multijob']:GetJobs(source)
-```
-
----
-
-## 🌍 Adding a Language
-
-1. Copy `locales/en.json` and rename it (for example `fr.json`).
-2. Translate the values, leaving the keys untouched.
-3. Set `Config.Locale = 'fr'` in `config.lua`.
-
-Missing keys automatically fall back to English.
-
----
-
 ## 👀 Showcase
 
-<!-- Add your screenshots here, for example: -->
-<!-- ![Multijob Menu](https://i.imgur.com/your-image.png) -->
+![MyJobs](https://i.imgur.com/R3UFo7A.png)
+![Job](https://i.imgur.com/SlvSDB5.png)
 
 ---
 
