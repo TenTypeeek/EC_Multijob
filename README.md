@@ -62,8 +62,9 @@ Your players can now press **F5** or type **/multijob** to manage their jobs!
 
 ## 👀 Showcase
 
-![MyJobs](https://i.imgur.com/R3UFo7A.png)
-![Job](https://i.imgur.com/SlvSDB5.png)
+![MainMenu](https://i.imgur.com/Q8Lg34V.png)
+![SelectedJob](https://i.imgur.com/aZq9tsD.png)
+![SwitchJob](https://i.imgur.com/wXuHiNA.png)
 
 ---
 
