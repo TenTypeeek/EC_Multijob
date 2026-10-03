@@ -71,6 +71,7 @@ Your players can now press **F5** or type **/multijob** to manage their jobs!
 <div align="center">
 
 ### 🌐 Created by Eclipse Development
+## 🤖 Made with AI
 
 Need help or custom FiveM scripts?  
 [**Join our Discord**](https://discord.gg/5D3wdy4dQH)
